@@ -2,9 +2,6 @@
 
 #include <vector>
 
-#define CSV_IO_NO_THREAD
-#include "csv.h"
-
 /*
  * Code that will be used in all implementations
  */

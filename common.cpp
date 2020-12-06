@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "csv.hpp"
+
 void usage();
 
 std::vector<DataPoint> readCSV(int argc, char **argv) {
@@ -9,41 +11,25 @@ std::vector<DataPoint> readCSV(int argc, char **argv) {
         usage();
     }
 
-    std::string filename(argv[1]);
+    csv::CSVReader input(argv[1]);
     std::vector<DataPoint> data;
 
-    io::CSVReader<13, io::trim_chars<' ', '\t'>, io::double_quote_escape<'"', '"'>> in(filename);
-    in.read_header(io::ignore_extra_column,
-                   "valence",
-                   "acousticness",
-                   "danceability",
-                   "energy",
-                   "instrumentalness",
-                   "tempo",
-                   "liveness",
-                   "loudness",
-                   "speechiness",
-                   "duration",
-                   "popularity",
-                   "year",
-                   "key");
-
-    DataPoint datum = {};
-    while (in.read_row(
-            datum.acousticness,
-            datum.danceability,
-            datum.energy,
-            datum.instrumentalness,
-            datum.valence,
-            datum.tempo,
-            datum.liveness,
-            datum.loudness,
-            datum.speechiness,
-            datum.duration,
-            datum.popularity,
-            datum.year,
-            datum.key)) {
-        data.push_back(datum);
+    for (auto &&row: input) {
+        data.push_back({
+            row["acousticness"].get<double>(),
+            row["danceability"].get<double>(),
+            row["energy"].get<double>(),
+            row["instrumentalness"].get<double>(),
+            row["valence"].get<double>(),
+            row["tempo"].get<double>(),
+            row["liveness"].get<double>(),
+            row["loudness"].get<double>(),
+            row["speechiness"].get<double>(),
+            row["duration_ms"].get<int>(),
+            row["popularity"].get<int>(),
+            row["year"].get<int>(),
+            row["key"].get<int>()
+        });
     }
 
     return data;
