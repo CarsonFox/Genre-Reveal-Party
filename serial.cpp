@@ -38,10 +38,10 @@ bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> 
 
     for (auto &&datum: data) {
         std::transform(centroids.begin(), centroids.end(), distances.begin(),
-                       [&](const DataPoint &centroid){ return std::abs(datum - centroid); });
+                       [&](const DataPoint &centroid){ return datum - centroid; });
         size_t min = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
 
-        changed = min != datum.centroid;
+        changed = changed || min != datum.centroid;
         datum.centroid = min;
     }
 
