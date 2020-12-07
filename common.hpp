@@ -20,6 +20,7 @@ struct DataPoint {
             popularity,
             year,
             key;
+    size_t centroid = 0;
 };
 
 std::vector<DataPoint> readCSV(int argc, char **argv);

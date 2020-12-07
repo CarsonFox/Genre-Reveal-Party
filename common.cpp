@@ -31,7 +31,6 @@ std::vector<DataPoint> readCSV(int argc, char **argv) {
             row["key"].get<int>()
         });
     }
-
     return data;
 }
 
