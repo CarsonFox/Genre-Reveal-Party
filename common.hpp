@@ -24,3 +24,4 @@ struct DataPoint {
 };
 
 std::vector<DataPoint> readCSV(int argc, char **argv);
+DataPoint randomDatum();

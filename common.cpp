@@ -1,6 +1,8 @@
 #include "common.hpp"
 
 #include <iostream>
+#include <random>
+#include <limits>
 
 #include "csv.hpp"
 
@@ -32,6 +34,27 @@ std::vector<DataPoint> readCSV(int argc, char **argv) {
         });
     }
     return data;
+}
+
+DataPoint randomDatum() {
+    static std::uniform_real_distribution<> zeroToOne(0.0, 1.0);
+    static std::uniform_int_distribution<> intDistribution(0, std::numeric_limits<int>::max());
+    static std::default_random_engine rand((std::random_device())());
+    return {
+        zeroToOne(rand),
+        zeroToOne(rand),
+        zeroToOne(rand),
+        zeroToOne(rand),
+        zeroToOne(rand),
+        zeroToOne(rand) * 100.0 + 50.0,
+        zeroToOne(rand),
+        zeroToOne(rand) * -60.0,
+        zeroToOne(rand),
+        intDistribution(rand) % 100000 + 200000,
+        intDistribution(rand) % 100,
+        intDistribution(rand) % 100 + 1921,
+        intDistribution(rand) % 12
+    };
 }
 
 void usage() {
