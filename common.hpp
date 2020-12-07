@@ -31,3 +31,4 @@ std::vector<DataPoint> readCSV(int argc, char **argv);
 DataPoint randomDatum();
 std::vector<DataPoint> randomCentroids(int k);
 std::ostream &operator<<(std::ostream &os, const DataPoint &datum);
+double operator-(const DataPoint &lhs, const DataPoint &rhs);

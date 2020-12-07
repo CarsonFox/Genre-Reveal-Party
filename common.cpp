@@ -73,12 +73,47 @@ std::ostream &operator<<(std::ostream &os, const DataPoint &datum) {
        datum.year << ',' <<
        datum.key << ',' <<
        datum.centroid;
+    return os;
 }
 
 std::vector<DataPoint> randomCentroids(int k) {
     std::vector<DataPoint> centroids;
     std::generate_n(std::back_inserter(centroids), k, randomDatum);
     return centroids;
+}
+
+inline std::array<double, dimensions> features(const DataPoint &datum) {
+    return {
+            datum.acousticness,
+            datum.danceability,
+            datum.energy,
+            datum.instrumentalness,
+            datum.valence,
+            datum.tempo,
+            datum.liveness,
+            datum.loudness,
+            datum.speechiness,
+            static_cast<double>(datum.duration),
+            static_cast<double>(datum.popularity),
+            static_cast<double>(datum.year),
+            static_cast<double>(datum.key)
+    };
+}
+
+/*
+ * Implementation of Euclidean distance formula
+ */
+double operator-(const DataPoint &lhs, const DataPoint &rhs) {
+    auto lhs_features = features(lhs), rhs_features = features(rhs);
+
+    auto difference_squared = [](double a, double b) { return std::pow(a - b, 2); };
+
+    /*
+     * Returns the square root of the sum of the squared differences. This is naive and slow.
+     */
+    return std::sqrt(
+            std::transform_reduce(lhs_features.begin(), lhs_features.end(), rhs_features.begin(),
+                                  0.0, std::plus{}, difference_squared));
 }
 
 void usage() {
