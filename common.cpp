@@ -82,7 +82,7 @@ std::vector<DataPoint> randomCentroids(int k) {
     return centroids;
 }
 
-inline std::array<double, dimensions> features(const DataPoint &datum) {
+inline std::array<double, dimensions> getFeatures(const DataPoint &datum) {
     return {
             datum.acousticness,
             datum.danceability,
@@ -104,7 +104,7 @@ inline std::array<double, dimensions> features(const DataPoint &datum) {
  * Implementation of Euclidean distance formula
  */
 double operator-(const DataPoint &lhs, const DataPoint &rhs) {
-    auto lhs_features = features(lhs), rhs_features = features(rhs);
+    auto lhs_features = getFeatures(lhs), rhs_features = getFeatures(rhs);
 
     auto difference_squared = [](double a, double b) { return std::pow(a - b, 2); };
 
@@ -116,7 +116,45 @@ double operator-(const DataPoint &lhs, const DataPoint &rhs) {
                                   0.0, std::plus{}, difference_squared));
 }
 
+void operator+=(DataPoint &lhs, const DataPoint &rhs) {
+    lhs.acousticness += rhs.acousticness;
+    lhs.danceability += rhs.danceability;
+    lhs.energy += rhs.energy;
+    lhs.instrumentalness += rhs.instrumentalness;
+    lhs.valence += rhs.valence;
+    lhs.tempo += rhs.tempo;
+    lhs.liveness += rhs.liveness;
+    lhs.loudness += rhs.loudness;
+    lhs.speechiness += rhs.speechiness;
+    lhs.duration += rhs.duration;
+    lhs.popularity += rhs.popularity;
+    lhs.year += rhs.year;
+    lhs.key += rhs.key;
+}
+
+void operator/=(DataPoint &lhs, double rhs) {
+    lhs.acousticness /= rhs;
+    lhs.danceability /= rhs;
+    lhs.energy /= rhs;
+    lhs.instrumentalness /= rhs;
+    lhs.valence /= rhs;
+    lhs.tempo /= rhs;
+    lhs.liveness /= rhs;
+    lhs.loudness /= rhs;
+    lhs.speechiness /= rhs;
+    lhs.duration = static_cast<int>(static_cast<double>(lhs.duration) / rhs);
+    lhs.popularity = static_cast<int>(static_cast<double>(lhs.popularity) / rhs);
+    lhs.year = static_cast<int>(static_cast<double>(lhs.year) / rhs);
+    lhs.key = static_cast<int>(static_cast<double>(lhs.key) / rhs);
+}
+
 void usage() {
     std::cerr << "Usage: ./bin data.csv" << std::endl;
     std::exit(EXIT_FAILURE);
+}
+
+bool DataPoint::isZero() const {
+    static_assert(static_cast<double>(0) == 0.0);
+    auto features = getFeatures(*this);
+    return std::all_of(features.begin(), features.end(), [](double x) {return x == 0.0; });
 }

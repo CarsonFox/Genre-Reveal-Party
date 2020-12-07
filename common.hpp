@@ -7,28 +7,38 @@
  * Code that will be used in all implementations
  */
 
-struct DataPoint {
-    double  acousticness,
-            danceability,
-            energy,
-            instrumentalness,
-            valence,
-            tempo,
-            liveness,
-            loudness,
-            speechiness;
-    int     duration,
-            popularity,
-            year,
-            key;
-    size_t centroid = 0;
-};
-
 constexpr int dimensions = 13;
 constexpr int max_iterations = 20;
 
+struct DataPoint {
+    bool isZero() const;
+
+    double  acousticness = 0.0,
+            danceability = 0.0,
+            energy = 0.0,
+            instrumentalness = 0.0,
+            valence = 0.0,
+            tempo = 0.0,
+            liveness = 0.0,
+            loudness = 0.0,
+            speechiness = 0.0;
+    int     duration = 0,
+            popularity = 0,
+            year = 0,
+            key = 0;
+    size_t centroid = 0;
+};
+
 std::vector<DataPoint> readCSV(int argc, char **argv);
+
 DataPoint randomDatum();
+
 std::vector<DataPoint> randomCentroids(int k);
+
 std::ostream &operator<<(std::ostream &os, const DataPoint &datum);
+
 double operator-(const DataPoint &lhs, const DataPoint &rhs);
+
+void operator+=(DataPoint &lhs, const DataPoint &rhs);
+
+void operator/=(DataPoint &lhs, double rhs);
