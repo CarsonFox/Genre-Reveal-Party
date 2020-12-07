@@ -3,6 +3,7 @@
 #include <iostream>
 #include <random>
 #include <limits>
+#include <algorithm>
 
 #include "csv.hpp"
 
@@ -39,7 +40,7 @@ std::vector<DataPoint> readCSV(int argc, char **argv) {
 DataPoint randomDatum() {
     static std::uniform_real_distribution<> zeroToOne(0.0, 1.0);
     static std::uniform_int_distribution<> intDistribution(0, std::numeric_limits<int>::max());
-    static std::default_random_engine rand((std::random_device())());
+    static std::default_random_engine rand((std::random_device()) ());
     return {
         zeroToOne(rand),
         zeroToOne(rand),
@@ -55,6 +56,29 @@ DataPoint randomDatum() {
         intDistribution(rand) % 100 + 1921,
         intDistribution(rand) % 12
     };
+}
+
+std::ostream &operator<<(std::ostream &os, const DataPoint &datum) {
+    os << datum.acousticness << ',' <<
+       datum.danceability << ',' <<
+       datum.energy << ',' <<
+       datum.instrumentalness << ',' <<
+       datum.valence << ',' <<
+       datum.tempo << ',' <<
+       datum.liveness << ',' <<
+       datum.loudness << ',' <<
+       datum.speechiness << ',' <<
+       datum.duration << ',' <<
+       datum.popularity << ',' <<
+       datum.year << ',' <<
+       datum.key << ',' <<
+       datum.centroid;
+}
+
+std::vector<DataPoint> randomCentroids(int k) {
+    std::vector<DataPoint> centroids;
+    std::generate_n(std::back_inserter(centroids), k, randomDatum);
+    return centroids;
 }
 
 void usage() {
