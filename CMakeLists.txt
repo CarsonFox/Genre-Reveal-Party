@@ -11,3 +11,6 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3 -g")
 
 add_executable(serial serial.cpp common.cpp)
 target_link_libraries(serial csv)
+
+add_executable(parallel parallel.cpp common.cpp)
+target_link_libraries(parallel csv pthread)
