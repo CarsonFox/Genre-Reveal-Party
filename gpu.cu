@@ -25,6 +25,13 @@ std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k) {
     bool changed;
     int iterations = 0;
 
+    DataPoint *deviceData;
+    auto dataSize = sizeof(DataPoint) * data.size();
+    checkErrors(cudaMalloc(&deviceData, dataSize));
+    checkErrors(cudaMemcpy(deviceData, data.data(), dataSize, cudaMemcpyHostToDevice));
+
+    auto blocks = data.size() / 1024 + 1;
+
     do {
         centroids = newCentroids(data, centroids);
         changed = assignCentroids(data, centroids);
