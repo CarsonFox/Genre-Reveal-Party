@@ -4,41 +4,39 @@
 
 #include "common.hpp"
 
-std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k, int threads);
+std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k);
 int getNumThreads(int argc, char **argv);
-bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids, int threads);
+bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids);
 std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const std::vector<DataPoint> &oldCentroids);
 
 int main(int argc, char **argv) {
     auto data = readCSV(argc, argv);
-    int threads = getNumThreads(argc, argv);
 
-    data = kmeans(data, 4, threads);
-
+    data = kmeans(data, 4);
     std::cout << data;
 
     return 0;
 }
 
-std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k, int threads) {
+std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k) {
     auto centroids = randomCentroids(data, k);
 
     bool changed;
     int iterations = 0;
 
     do {
-        changed = assignCentroids(data, centroids, threads);
+        changed = assignCentroids(data, centroids);
         centroids = newCentroids(data, centroids);
     } while (changed && iterations++ < max_iterations);
 
     return data;
 }
 
-bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids, int threads) {
+bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids) {
     std::mutex mutex;
     bool changed = false;
 
-    #pragma omp parallel default(none) shared(data, centroids, mutex, changed) num_threads(threads)
+    #pragma omp parallel default(none) shared(data, centroids, mutex, changed)
     {
         auto localCentroids = centroids;
         bool localChanged = false;
@@ -83,15 +81,4 @@ std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const st
     }
 
     return newCentroids;
-}
-
-void usage() {
-    std::cerr << "Usage: ./parallel data.csv NUM_THREADS" << std::endl;
-    std::exit(EXIT_FAILURE);
-}
-
-int getNumThreads(int argc, char **argv) {
-    if (argc < 3)
-        usage();
-    return std::atoi(argv[2]);
 }

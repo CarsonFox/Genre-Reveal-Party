@@ -67,8 +67,3 @@ std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const st
 
     return newCentroids;
 }
-
-void usage() {
-    std::cerr << "Usage: ./distributed data.csv" << std::endl;
-    std::exit(EXIT_FAILURE);
-}

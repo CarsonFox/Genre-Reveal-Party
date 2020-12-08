@@ -8,7 +8,10 @@
 
 std::default_random_engine randomEngine((std::random_device()) ());
 
-void usage();
+void usage() {
+    std::cerr << "Usage: ./binary data.csv" << std::endl;
+    std::exit(EXIT_FAILURE);
+}
 
 std::vector<DataPoint> readCSV(int argc, char **argv) {
     if (argc < 2) {
