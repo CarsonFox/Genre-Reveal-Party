@@ -4,40 +4,41 @@
 
 #include "common.hpp"
 
-std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k);
-bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids);
+std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k, int threads);
+int getNumThreads(int argc, char **argv);
+bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids, int threads);
 std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const std::vector<DataPoint> &oldCentroids);
 
 int main(int argc, char **argv) {
     auto data = readCSV(argc, argv);
-    data = kmeans(data, 4);
+    int threads = getNumThreads(argc, argv);
+
+    data = kmeans(data, 4, threads);
 
     std::cout << data;
 
     return 0;
 }
 
-std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k) {
+std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k, int threads) {
     auto centroids = randomCentroids(data, k);
 
     bool changed;
     int iterations = 0;
 
     do {
-        changed = assignCentroids(data, centroids);
+        changed = assignCentroids(data, centroids, threads);
         centroids = newCentroids(data, centroids);
     } while (changed && iterations++ < max_iterations);
-
-    std::cerr << "Iterations: " << iterations << std::endl;
 
     return data;
 }
 
-bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids) {
+bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids, int threads) {
     std::mutex mutex;
     bool changed = false;
 
-    #pragma omp parallel default(none) shared(data, centroids, mutex, changed)
+    #pragma omp parallel default(none) shared(data, centroids, mutex, changed) num_threads(threads)
     {
         auto localCentroids = centroids;
         bool localChanged = false;
@@ -82,4 +83,15 @@ std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const st
     }
 
     return newCentroids;
+}
+
+void usage() {
+    std::cerr << "Usage: ./parallel data.csv NUM_THREADS" << std::endl;
+    std::exit(EXIT_FAILURE);
+}
+
+int getNumThreads(int argc, char **argv) {
+    if (argc < 3)
+        usage();
+    return std::atoi(argv[2]);
 }

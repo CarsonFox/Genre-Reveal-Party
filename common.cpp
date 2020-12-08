@@ -154,7 +154,3 @@ void operator/=(DataPoint &lhs, double rhs) {
     lhs.key /= rhs;
 }
 
-void usage() {
-    std::cerr << "Usage: ./bin data.csv" << std::endl;
-    std::exit(EXIT_FAILURE);
-}

@@ -27,8 +27,6 @@ std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k) {
         centroids = newCentroids(data, centroids);
     } while (changed && iterations++ < max_iterations);
 
-    std::cerr << "Iterations: " << iterations << std::endl;
-
     return data;
 }
 
@@ -68,4 +66,9 @@ std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const st
     }
 
     return newCentroids;
+}
+
+void usage() {
+    std::cerr << "Usage: ./serial data.csv" << std::endl;
+    std::exit(EXIT_FAILURE);
 }
