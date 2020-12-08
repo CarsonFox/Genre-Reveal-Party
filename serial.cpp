@@ -9,17 +9,15 @@ std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const st
 
 int main(int argc, char **argv) {
     auto data = readCSV(argc, argv);
-    data = kmeans(data, 10);
+    data = kmeans(data, 5);
 
-    for (auto &&datum : data) {
-        std::cout << datum << std::endl;
-    }
+    std::cout << data;
 
     return 0;
 }
 
 std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k) {
-    auto centroids = randomCentroids(k);
+    auto centroids = randomCentroids(data, k);
 
     bool changed;
     int iterations = 0;
@@ -41,7 +39,7 @@ bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> 
                        [&](const DataPoint &centroid){ return datum - centroid; });
         size_t min = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
 
-        changed = changed || min != datum.centroid;
+        changed = changed || (min != datum.centroid);
         datum.centroid = min;
     }
 
@@ -61,7 +59,7 @@ std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const st
     }
     for (size_t i = 0; i < newCentroids.size(); i++) {
         if (counts[i] == 0.0) {
-            newCentroids[i] = randomDatum();
+            newCentroids[i] = randomDatum(data);
         } else {
             newCentroids[i] /= counts[i];
         }

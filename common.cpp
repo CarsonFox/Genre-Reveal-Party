@@ -2,10 +2,11 @@
 
 #include <iostream>
 #include <random>
-#include <limits>
 #include <algorithm>
 
 #include "csv.hpp"
+
+std::default_random_engine randomEngine((std::random_device()) ());
 
 void usage();
 
@@ -37,27 +38,6 @@ std::vector<DataPoint> readCSV(int argc, char **argv) {
     return data;
 }
 
-DataPoint randomDatum() {
-    static std::uniform_real_distribution<> zeroToOne(0.0, 1.0);
-    static std::uniform_int_distribution<> intDistribution(0, std::numeric_limits<int>::max());
-    static std::default_random_engine rand((std::random_device()) ());
-    return {
-        zeroToOne(rand),
-        zeroToOne(rand),
-        zeroToOne(rand),
-        zeroToOne(rand),
-        zeroToOne(rand),
-        zeroToOne(rand) * 100.0 + 50.0,
-        zeroToOne(rand),
-        zeroToOne(rand) * -60.0,
-        zeroToOne(rand),
-        intDistribution(rand) % 100000 + 200000,
-        intDistribution(rand) % 100,
-        intDistribution(rand) % 100 + 1921,
-        intDistribution(rand) % 12
-    };
-}
-
 std::ostream &operator<<(std::ostream &os, const DataPoint &datum) {
     os << datum.acousticness << ',' <<
        datum.danceability << ',' <<
@@ -72,13 +52,39 @@ std::ostream &operator<<(std::ostream &os, const DataPoint &datum) {
        datum.popularity << ',' <<
        datum.year << ',' <<
        datum.key << ',' <<
-       datum.centroid;
+       datum.centroid << ',';
     return os;
 }
 
-std::vector<DataPoint> randomCentroids(int k) {
+std::ostream &operator<<(std::ostream &os, const std::vector<DataPoint> &data) {
+    os << "acousticness" << ',' <<
+       "danceability" << ',' <<
+       "energy" << ',' <<
+       "instrumentalness" << ',' <<
+       "valence" << ',' <<
+       "tempo" << ',' <<
+       "liveness" << ',' <<
+       "loudness" << ',' <<
+       "speechiness" << ',' <<
+       "duration" << ',' <<
+       "popularity" << ',' <<
+       "year" << ',' <<
+       "key" << ',' <<
+       "centroid," << std::endl;
+    for (auto &&datum: data) {
+        os << datum << std::endl;
+    }
+    return os;
+}
+
+DataPoint randomDatum(const std::vector<DataPoint> &data) {
+    std::uniform_int_distribution<> indexDist(0, data.size());
+    return data[indexDist(randomEngine)];
+}
+
+std::vector<DataPoint> randomCentroids(const std::vector<DataPoint> &data, int k) {
     std::vector<DataPoint> centroids;
-    std::generate_n(std::back_inserter(centroids), k, randomDatum);
+    std::generate_n(std::back_inserter(centroids), k, [&](){ return randomDatum(data); });
     return centroids;
 }
 

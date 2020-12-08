@@ -8,7 +8,7 @@
  */
 
 constexpr int dimensions = 13;
-constexpr int max_iterations = 20;
+constexpr int max_iterations = 100;
 
 struct DataPoint {
     bool isZero() const;
@@ -31,11 +31,13 @@ struct DataPoint {
 
 std::vector<DataPoint> readCSV(int argc, char **argv);
 
-DataPoint randomDatum();
+DataPoint randomDatum(const std::vector<DataPoint> &data);
 
-std::vector<DataPoint> randomCentroids(int k);
+std::vector<DataPoint> randomCentroids(const std::vector<DataPoint> &data, int k);
 
 std::ostream &operator<<(std::ostream &os, const DataPoint &datum);
+
+std::ostream &operator<<(std::ostream &os, const std::vector<DataPoint> &data);
 
 double operator-(const DataPoint &lhs, const DataPoint &rhs);
 
