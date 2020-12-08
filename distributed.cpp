@@ -51,6 +51,9 @@ bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> 
         MPI_Bcast(&dataSize, 1, MPI_INT, 0, comm);
         MPI_Bcast(&k, 1, MPI_INT, 0, comm);
 
+        int chunkSize = dataSize / comm_size;
+        std::vector<DataPoint> localData(chunkSize);
+
         MPI_Finalize();
     }
 
