@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
-project(Genre_Reveal_Party)
+project(Genre_Reveal_Party CUDA CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CUDA_STANDARD 11)
+
 set(CMAKE_BUILD_TYPE Release)
 
 add_subdirectory(csv-parser)
@@ -25,3 +27,10 @@ if(MPI_FOUND)
     target_include_directories(distributed PUBLIC ${MPI_CXX_INCLUDE_DIRS})
     target_link_libraries(distributed ${MPI_CXX_LIBRARIES} csv)
 endif()
+
+add_executable(gpu gpu.cu common.cpp)
+set_target_properties(
+        gpu
+        PROPERTIES
+        CUDA_SEPARABLE_COMPILATION ON)
+target_link_libraries(gpu cudart csv)
