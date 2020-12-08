@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <mutex>
 
 #include "common.hpp"
 
@@ -33,16 +34,28 @@ std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k) {
 }
 
 bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids) {
-    std::vector<double> distances(centroids.size(), 0.0);
+    std::mutex mutex;
     bool changed = false;
 
-    for (auto &&datum: data) {
-        std::transform(centroids.begin(), centroids.end(), distances.begin(),
-                       [&](const DataPoint &centroid){ return datum - centroid; });
-        size_t min = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
+    #pragma omp parallel default(none) shared(data, centroids, mutex, changed)
+    {
+        auto localCentroids = centroids;
+        bool localChanged = false;
 
-        changed = changed || (min != datum.centroid);
-        datum.centroid = min;
+        #pragma omp for
+        for (auto &&datum: data) {
+            std::vector<double> distances(centroids.size(), 0.0);
+
+            std::transform(localCentroids.begin(), localCentroids.end(), distances.begin(),
+                           [&](const DataPoint &centroid){ return datum - centroid; });
+            size_t min = std::distance(distances.begin(), std::min_element(distances.begin(), distances.end()));
+
+            localChanged |= min != datum.centroid;
+            datum.centroid = min;
+        }
+
+        std::lock_guard<std::mutex> guard(mutex);
+        changed |= localChanged;
     }
 
     return changed;
@@ -53,12 +66,13 @@ std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const st
     std::vector<double> counts(oldCentroids.size(), 0.0);
 
     /*
-     * Each new centroid is the geometric mean of its data
-     */
+    * Each new centroid is the geometric mean of its data
+    */
     for (auto &&datum: data) {
         newCentroids[datum.centroid] += datum;
         counts[datum.centroid] += 1.0;
     }
+
     for (size_t i = 0; i < newCentroids.size(); i++) {
         if (counts[i] == 0.0) {
             newCentroids[i] = randomDatum(data);
