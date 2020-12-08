@@ -7,7 +7,7 @@ set(CMAKE_BUILD_TYPE Release)
 add_subdirectory(csv-parser)
 include_directories(csv-parser/include)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -O0 -g")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3 -g")
 
 add_executable(serial serial.cpp common.cpp)
 target_link_libraries(serial csv)

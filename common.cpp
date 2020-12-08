@@ -29,10 +29,10 @@ std::vector<DataPoint> readCSV(int argc, char **argv) {
             row["liveness"].get<double>(),
             row["loudness"].get<double>(),
             row["speechiness"].get<double>(),
-            row["duration_ms"].get<int>(),
-            row["popularity"].get<int>(),
-            row["year"].get<int>(),
-            row["key"].get<int>()
+            row["duration_ms"].get<double>(),
+            row["popularity"].get<double>(),
+            row["year"].get<double>(),
+            row["key"].get<double>()
         });
     }
     return data;
@@ -99,10 +99,10 @@ inline std::array<double, dimensions> getFeatures(const DataPoint &datum) {
             datum.liveness,
             datum.loudness,
             datum.speechiness,
-            static_cast<double>(datum.duration),
-            static_cast<double>(datum.popularity),
-            static_cast<double>(datum.year),
-            static_cast<double>(datum.key)
+            datum.duration,
+            datum.popularity,
+            datum.year,
+            datum.key
     };
 }
 
@@ -148,19 +148,13 @@ void operator/=(DataPoint &lhs, double rhs) {
     lhs.liveness /= rhs;
     lhs.loudness /= rhs;
     lhs.speechiness /= rhs;
-    lhs.duration = static_cast<int>(static_cast<double>(lhs.duration) / rhs);
-    lhs.popularity = static_cast<int>(static_cast<double>(lhs.popularity) / rhs);
-    lhs.year = static_cast<int>(static_cast<double>(lhs.year) / rhs);
-    lhs.key = static_cast<int>(static_cast<double>(lhs.key) / rhs);
+    lhs.duration /= rhs;
+    lhs.popularity /= rhs;
+    lhs.year /= rhs;
+    lhs.key /= rhs;
 }
 
 void usage() {
     std::cerr << "Usage: ./bin data.csv" << std::endl;
     std::exit(EXIT_FAILURE);
-}
-
-bool DataPoint::isZero() const {
-    static_assert(static_cast<double>(0) == 0.0);
-    auto features = getFeatures(*this);
-    return std::all_of(features.begin(), features.end(), [](double x) {return x == 0.0; });
 }

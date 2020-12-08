@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 with open('data/out.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
-    lines = list(map(lambda row: [row['popularity'],
+    lines = list(map(lambda row: [row['tempo'],
                                   row['energy'],
                                   row['centroid']], reader))
 

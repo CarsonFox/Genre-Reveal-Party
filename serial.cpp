@@ -9,7 +9,7 @@ std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const st
 
 int main(int argc, char **argv) {
     auto data = readCSV(argc, argv);
-    data = kmeans(data, 5);
+    data = kmeans(data, 4);
 
     std::cout << data;
 
@@ -26,6 +26,8 @@ std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k) {
         changed = assignCentroids(data, centroids);
         centroids = newCentroids(data, centroids);
     } while (changed && iterations++ < max_iterations);
+
+    std::cerr << "Iterations: " << iterations << std::endl;
 
     return data;
 }

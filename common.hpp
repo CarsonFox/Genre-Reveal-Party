@@ -8,11 +8,9 @@
  */
 
 constexpr int dimensions = 13;
-constexpr int max_iterations = 100;
+constexpr int max_iterations = 200;
 
 struct DataPoint {
-    bool isZero() const;
-
     double  acousticness = 0.0,
             danceability = 0.0,
             energy = 0.0,
@@ -21,11 +19,11 @@ struct DataPoint {
             tempo = 0.0,
             liveness = 0.0,
             loudness = 0.0,
-            speechiness = 0.0;
-    int     duration = 0,
-            popularity = 0,
-            year = 0,
-            key = 0;
+            speechiness = 0.0,
+            duration = 0.0,
+            popularity = 0.0,
+            year = 0.0,
+            key = 0.0;
     size_t centroid = 0;
 };
 
