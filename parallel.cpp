@@ -25,8 +25,8 @@ std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k) {
     int iterations = 0;
 
     do {
-        changed = assignCentroids(data, centroids);
         centroids = newCentroids(data, centroids);
+        changed = assignCentroids(data, centroids);
     } while (changed && iterations++ < max_iterations);
 
     return data;

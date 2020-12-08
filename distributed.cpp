@@ -1,6 +1,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include <mpi.h>
+
 #include "common.hpp"
 
 std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k);
@@ -23,14 +25,35 @@ std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k) {
     int iterations = 0;
 
     do {
-        changed = assignCentroids(data, centroids);
         centroids = newCentroids(data, centroids);
+        changed = assignCentroids(data, centroids);
     } while (changed && iterations++ < max_iterations);
 
     return data;
 }
 
 bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids) {
+    //MPI variables
+    int comm_size, rank;
+    const auto comm = MPI_COMM_WORLD;
+
+    MPI_Init(nullptr, nullptr); {
+        MPI_Comm_size(comm, &comm_size);
+        MPI_Comm_rank(comm, &rank);
+
+        int dataSize, k;
+
+        if (rank == 0) {
+            dataSize = data.size();
+            k = centroids.size();
+        }
+
+        MPI_Bcast(&dataSize, 1, MPI_INT, 0, comm);
+        MPI_Bcast(&k, 1, MPI_INT, 0, comm);
+
+        MPI_Finalize();
+    }
+
     std::vector<double> distances(centroids.size(), 0.0);
     bool changed = false;
 
