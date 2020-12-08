@@ -120,9 +120,11 @@ double operator-(const DataPoint &lhs, const DataPoint &rhs) {
     /*
      * Returns the square root of the sum of the squared differences. This is naive and slow.
      */
-    return std::sqrt(
-            std::transform_reduce(lhs_features.begin(), lhs_features.end(), rhs_features.begin(),
-                                  0.0, std::plus{}, difference_squared));
+    std::vector<double> squared_differences;
+    std::transform(lhs_features.begin(), lhs_features.end(), rhs_features.begin(),
+                   std::back_inserter(squared_differences),
+                   difference_squared);
+    return std::sqrt(std::accumulate(squared_differences.begin(), squared_differences.end(), 0.0, std::plus<>{}));
 }
 
 void operator+=(DataPoint &lhs, const DataPoint &rhs) {
