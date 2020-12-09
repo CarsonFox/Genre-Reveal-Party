@@ -8,7 +8,7 @@
  */
 
 constexpr int dimensions = 13;
-constexpr int max_iterations = 200;
+constexpr int max_iterations = 80;
 
 struct DataPoint {
     double  acousticness = 0.0,

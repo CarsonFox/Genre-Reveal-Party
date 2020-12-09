@@ -51,7 +51,7 @@ void kmeans(std::vector<DataPoint> data, int k) {
 
     if (rank == 0) {
         std::copy(localData.end() - remainder, localData.end(), data.end() - remainder);
-//        std::cout << data;
+        std::cout << data;
     }
 
     MPI_Finalize();
@@ -75,7 +75,7 @@ bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> 
         datum.centroid = min;
     }
 
-    MPI_Allgather(&changed, 1, MPI_CXX_BOOL, &localChanged, 1, MPI_CXX_BOOL, comm);
+    MPI_Allreduce(&localChanged, &changed, 1, MPI_CXX_BOOL, MPI_LOR, comm);
 
     return changed;
 }
@@ -125,7 +125,6 @@ std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const st
         MPI_Send(counts.data(), k, MPI_DOUBLE, 0, rank + comm_size, comm);
     }
 
-    MPI_Barrier(comm);
     MPI_Bcast(newCentroids.data(), byteCount, MPI_BYTE, 0, comm);
 
     return newCentroids;
