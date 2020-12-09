@@ -9,7 +9,7 @@ std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const st
 
 int main(int argc, char **argv) {
     auto data = readCSV(argc, argv);
-    data = kmeans(data, 4);
+    data = kmeans(data, 3);
 
     std::cout << data;
 
