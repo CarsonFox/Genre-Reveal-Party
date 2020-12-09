@@ -159,3 +159,18 @@ void operator/=(DataPoint &lhs, double rhs) {
     lhs.key /= rhs;
 }
 
+bool operator==(const DataPoint &lhs, const DataPoint &rhs) {
+    return lhs.acousticness == rhs.acousticness &&
+    lhs.danceability == rhs.danceability &&
+    lhs.energy == rhs.energy &&
+    lhs.instrumentalness == rhs.instrumentalness &&
+    lhs.valence == rhs.valence &&
+    lhs.tempo == rhs.tempo &&
+    lhs.liveness == rhs.liveness &&
+    lhs.loudness == rhs.loudness &&
+    lhs.speechiness == rhs.speechiness &&
+    lhs.duration == rhs.duration &&
+    lhs.popularity == rhs.popularity &&
+    lhs.year == rhs.year &&
+    lhs.key == rhs.key;
+}

@@ -43,4 +43,6 @@ void operator+=(DataPoint &lhs, const DataPoint &rhs);
 
 void operator/=(DataPoint &lhs, double rhs);
 
+bool operator==(const DataPoint &lhs, const DataPoint &rhs);
+
 void usage();

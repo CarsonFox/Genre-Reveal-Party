@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
     auto data = readCSV(argc, argv);
     data = kmeans(data, 4);
 
-    std::cout << data;
+//    std::cout << data;
 
     return 0;
 }
