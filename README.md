@@ -1,5 +1,7 @@
 # Genre-Reveal-Party
 
+For a better format, read this readme at https://github.com/CarsonFox/Genre-Reveal-Party/blob/master/README.md
+
 To build, run these commands in the project directory:
 ```
 git clone https://github.com/vincentlaucsb/csv-parser
