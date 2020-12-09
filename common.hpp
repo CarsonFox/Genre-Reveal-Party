@@ -4,12 +4,15 @@
 #include <ostream>
 
 /*
- * Code that will be used in all implementations
+ * This contains code that is common to all implementations.
+ * This includes code to parse the csv file, operations that can be done on data points,
+ * and random data point selection for initializing centroids.
  */
 
 constexpr int dimensions = 13;
 constexpr int max_iterations = 80;
 
+//This should've been implemented as an array of doubles.
 struct DataPoint {
     double  acousticness = 0.0,
             danceability = 0.0,

@@ -5,7 +5,6 @@
 #include "common.hpp"
 
 std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k);
-int getNumThreads(int argc, char **argv);
 bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids);
 std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const std::vector<DataPoint> &oldCentroids);
 
@@ -18,6 +17,9 @@ int main(int argc, char **argv) {
     return 0;
 }
 
+/*
+ * The main loop is unchanged.
+ */
 std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k) {
     auto centroids = randomCentroids(data, k);
 
@@ -32,13 +34,18 @@ std::vector<DataPoint> kmeans(std::vector<DataPoint> data, int k) {
     return data;
 }
 
+/*
+ * Assign centroids in parallel. This loop is embarrassingly parallel,
+ * and the only necessary synchronization is when deciding to keep going.
+ */
 bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> &centroids) {
     std::mutex mutex;
     bool changed = false;
 
     #pragma omp parallel default(none) shared(data, centroids, mutex, changed)
     {
-        auto localCentroids = centroids;
+        //Since there are few centroids, copy them to speed up memory access
+        const auto localCentroids = centroids;
         bool localChanged = false;
 
         #pragma omp for
@@ -53,6 +60,7 @@ bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> 
             datum.centroid = min;
         }
 
+        //Synchronize, then decide whether to keep iterating
         std::lock_guard<std::mutex> guard(mutex);
         changed |= localChanged;
     }
@@ -60,13 +68,14 @@ bool assignCentroids(std::vector<DataPoint> &data, const std::vector<DataPoint> 
     return changed;
 }
 
+/*
+ * This function is unchanged. It would be very hard to parallelize this and achieve
+ * any meaningful speedup, since there's so much shared memory access.
+ */
 std::vector<DataPoint> newCentroids(const std::vector<DataPoint> &data, const std::vector<DataPoint> &oldCentroids) {
     std::vector<DataPoint> newCentroids(oldCentroids.size());
     std::vector<double> counts(oldCentroids.size(), 0.0);
 
-    /*
-    * Each new centroid is the geometric mean of its data
-    */
     for (auto &&datum: data) {
         newCentroids[datum.centroid] += datum;
         counts[datum.centroid] += 1.0;
