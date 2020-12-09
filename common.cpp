@@ -6,7 +6,7 @@
 
 #include "csv.hpp"
 
-std::default_random_engine randomEngine((std::random_device()) ());
+std::default_random_engine randomEngine(42069);
 
 void usage() {
     std::cerr << "Usage: ./binary data.csv" << std::endl;
