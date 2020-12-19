@@ -45,11 +45,11 @@ function kmeans(data, k)
     end
 end
 
+function assign_centroids!(data, centroids) end
+
 function new_centroids(data, centroids)
     centroids
 end
-
-function assign_centroids!(data, centroids) end
 
 function random_centroid(data)
     [x for x in data[Random.rand(rng, 1:(DataFrames.nrow(data))), datacols]]
