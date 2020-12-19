@@ -1,6 +1,8 @@
 using CSV
 using DataFrames
 using Random
+using UMAP
+using Plots
 
 datacols = [
     :valence,
@@ -19,14 +21,18 @@ datacols = [
     :tempo,
 ]
 
-rng = Random.MersenneTwister(69)
+rng = MersenneTwister(69)
 
 function main()
     data =
-        CSV.File("data/data-small.csv", type = Float64, select = datacols) |>
-        DataFrames.DataFrame
+        CSV.File("data/data.csv", type = Float64, select = datacols) |>
+        DataFrame
 
-    kmeans(data, 5)
+    embedding = umap(transpose(Matrix(data)); n_neighbors=5, min_dist=0.001)
+
+    x_axis = embedding[1,:]
+    y_axis = embedding[2,:]
+    scatter(x_axis, y_axis)
 end
 
 function kmeans(data, k)
@@ -52,7 +58,7 @@ function new_centroids(data, centroids)
 end
 
 function random_centroid(data)
-    [x for x in data[Random.rand(rng, 1:(DataFrames.nrow(data))), datacols]]
+    [x for x in data[rand(rng, 1:(nrow(data))), datacols]]
 end
 
 main()
